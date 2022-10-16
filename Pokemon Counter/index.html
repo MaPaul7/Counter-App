@@ -1,0 +1,864 @@
+<!DOCTYPE HTML>
+<head>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<style>
+.back{
+  position: absolute;
+  right: 0px;
+  margin: 2px;
+  border-radius: 10px;
+  height: 10px;
+  width: 10px;
+  z-index: 2;
+  background-color: blue;
+}
+#Saved{
+  position: relative;
+  left: -75px;
+  top: 100px;
+  width: 35%;
+  height: 250px;
+  background-color: #323232;
+  border-radius: 10px;
+  border: 1px solid black;
+
+  overflow: scroll;
+}
+.btn-circle {
+    width: 40px;
+    height: 40px;
+    padding: 6px;
+    border-radius: 20px;
+    margin: 3px;
+    text-align: center;
+    font-size: 20px;
+    line-height: 1.42857;
+}
+.entry{
+  position: relative;
+  width: 200px;
+  height: 160px;
+}
+.entry2{
+  position: absolute;
+  top: 0px;
+  left: 275px;
+  width: 100px;
+  height: 160px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: -1;
+}
+#darkMode{
+  position: absolute;
+  width: 115px;
+  top: 2%;
+  left: 85%;
+}
+#quickFix{
+  position: absolute;
+  width: 115px;
+  top: 2%;
+  left: 75%;
+}
+#List{
+  position: absolute;
+  padding: 10px;
+  width: 450px;
+  top: 8%;
+  left: 38%;
+  border-radius: 20px;
+}
+
+
+</style>
+</head>
+<link rel="icon" type="image/x-icon" href="GBulba.ico">
+<body>
+
+<div class="container">
+<br>
+<input id="numb" placeholder="Enter Name"><br>
+<input id="starting" placeholder="Starting Number"><br>
+<input type="checkbox" id="shinyBool" name="shiny">
+  <label for="shiny">Shiny?</label>
+<button type="button" class="btn btn-primary"
+onclick="myFunction(document.getElementById('numb').value, document.getElementById('starting').value)">Create</button>
+
+<button type="button" onclick = "changeTheme()" id = "darkMode" class="btn btn-dark">Dark Mode</button>
+<button type="button" onclick = "quickFix()" id = "quickFix" class="btn btn-info">Debug</button>
+<center><div id = "List">
+</div>
+</center>
+<div id = "Saved">
+  <center>Saved Hunts</center> <br>
+</div>
+</div>
+</body>
+
+<script>
+
+let dm = false;
+let dc = true;
+
+let gen1 = ["bulbasaur", "ivysaur", "venusaur", "squirtle", "wartortle", "blastoise",
+"charmander", "charmeleon", "farfetch'd", "charizard", "caterpie", "metapod",
+"butterfree", "weedle", "kakuna", "beedrill", "pidgey", "pidgeotto","pidgeot",
+"spearow", "fearow", "rattata", "raticate", "ekans", "arbok", "pikachu", "raichu",
+"sandshrew", "sandslash", "nidoran", "nidorina", "nidoqueen", "nidorino", "nidoking",
+"clefairy", "clefable", "vulpix", "ninetales", "jigglypuff", "wigglytuff", "zubat",
+"golbat", "oddish", "gloom", "vileplume", "paras", "parasect", "venonat", "venomoth",
+"diglett", "dugtrio", "meowth", "persian", "psyduck", "golduck", "mankey", "primeape",
+"growlithe", "arcanine", "poliwag", "poliwhirl", "poliwrath", "abra", "kadabra",
+"alakazam", "machop", "machoke", "machamp", "bellsprout", "weepinbell", "victreebel",
+"tentacool", "tentacruel", "geodude", "graveler", "golem", "ponyta", "rapidash",
+"slowpoke", "slowbro", "magnemite", "magneton", "mr. mime", "doduo", "dodrio", "seel",
+"dewgong", "grimer", "muk", "shellder", "cloyster", "gastly", "haunter", "gengar", "onix",
+"drowzee", "hypno", "krabby", "kingler", "voltorb", "electrode", "exeggcute", "exeggutor",
+"cubone", "marowak", "hitmonlee", "hitmonchan", "lickitung", "koffing", "weezing",
+"rhyhorn", "rhydon", "chansey", "tangela", "kangaskhan", "horsea", "seadra", "goldeen",
+"seaking", "staryu", "starmie", "scyther", "jynx", "electabuzz", "magmar", "pinsir",
+"tauros", "magikarp", "gyarados", "ditto", "eevee", "jolteon", "flareon", "vaporeon",
+"porygon", "omanyte", "omastar", "kabuto", "kabutops", "aerodactyl", "snorlax",
+"arcituno", "zapdos", "moltres", "dratini", "dragonair", "dragonite", "mewtwo", "mew"];
+
+let gen2 = ["chikorita", "bayleef", "meganium", "cyndaquil", "quilava", "typhlosion",
+"totodile", "croconaw", "feraligatr", "sentret", "furret", "hoothoot", "noctowl",
+"ledyba", "ledian", "spinarak", "ariados", "crobat", "chinchou", "lanturn", "pichu",
+"cleffa", "igglybuff", "togepi", "togetic", "natu", "xatu", "mareep", "flaaffy", "ampharos",
+"bellossom", "marill", "azumarill", "sudowoodo", "politoed", "hoppip", "skiploom",
+"jumpluff", "aipom", "sunkern", "sunflora", "yanma", "wooper", "quagsire", "espeon",
+"umbreon", "murkrow", "slowking", "misdreavus", "wobbuffet", "girafarig",
+"pineco", "forretress", "dunsparce", "gligar", "steelix", "snubbull", "granbull",
+"qwilfish", "scizor", "shuckle", "heracross", "sneasel", "teddiursa", "ursaring", "slugma",
+"magcargo", "swinub", "piloswine", "corsola", "remoraid", "octillery", "delibird",
+"mantine", "skarmory", "houndour", "houndoom", "kingdra", "phanpy", "donphan", "porygon2",
+"stantler", "smeargle", "hitmontop", "smoochum", "elekid", "magby", "miltank",
+"blissey", "raikou", "entei", "suicune", "larvitar", "pupitar", "tyranitar", "lugia",
+"hooh", "celebi"];
+
+let gen3 = ["treecko", "grovyle", "sceptile", "torchic", "combusken", "blaziken",
+"mudkip", "marshtomp", "swampert", "poochyena", "mightyena", "zigzagoon", "linoone",
+"wurmple", "silcoon", "beautifly", "cascoon", "dustox", "lotad", "lombre", "ludicolo",
+"seedot", "nuzleaf", "shiftry", "taillow", "swellow", "wingull", "pelipper", "ralts",
+"kirlia", "gardevoir", "surskit", "masquerain", "shroomish", "breloom", "slakoth",
+"vigoroth", "slaking", "nincada", "ninjask", "shedinja", "whismur", "loudred", "exploud",
+"makuhita", "hariyama", "azurill", "nosepass", "skitty", "delcatty", "sableye", "mawile",
+"aron", "lairon", "aggron", "meditite", "medicham", "electrike", "manectric", "plusle",
+"minun", "volbeat", "illumise", "roselia", "gulpin", "swalot", "carvanha", "sharpedo",
+"wailmer", "wailord", "numel", "camerupt", "torkoal", "spoink", "grumpig", "spinda",
+"trapinch", "vibrava", "flygon", "cacnea", "cacturne", "swablu", "altaria", "zangoose",
+"seviper", "lunatone", "solrock", "lunatone", "barboach", "whiscash", "corphish",
+"crawdaunt", "baltoy", "claydol", "lileep", "cradily", "anorith", "armaldo", "feebas",
+"milotic", "castform", "kecleon", "shuppet", "banette", "duskull", "dusclops", "tropius",
+"chimecho", "absol", "wynaut", "snorunt", "glalie", "spheal", "sealeo", "walrien",
+"clamperl", "huntail", "gorebyss", "relicanth", "luvdisc", "bagon", "shelgon", "salamence",
+"beldum", "metang", "metagross", "regirock", "regice", "registeel", "latias", "latios",
+"kyogre", "groudon", "rayquaza", "jirachi", "deoxys"];
+
+let gen4 = ["turtwig", "grotle", "torterra", "chimchar", "monferno", "infernape", "piplup",
+"prinplup", "empoleon", "starly", "staravia", "staraptor", "bidoof", "bibarel", "kricketot",
+"kricketune", "shinx", "luxio", "luxray", "budew", "roserade", "cranidos", "rampardos",
+"shieldon", "bastiodon", "burmy", "wormadam", "mothim", "combee", "vespiquen", "pachirisu",
+"buizel", "floatzel", "cherubi", "cherrim", "shellos", "gastrodon", "ambipom", "drifloon",
+"drifblim", "buneary", "lopunny", "mismagius", "honchkrow", "glameow", "purugly", "chingling",
+"stunky", "skuntank", "bronzor", "bronzong", "bonsly", "mime jr.", "happiny", "chatot",
+"spiritomb", "gible", "gabite", "garchomp", "munchlax", "riolu", "lucario", "hippopotas",
+"hippowdon", "skorupi", "drapion", "croagunk", "toxicroak", "carnivine", "finneon",
+"lumineon", "mantyke", "snover", "abomasnow", "weavile", "magnezone", "lickilicky",
+"rhyperior", "tangrowth", "electivire", "magmortar", "togekiss", "yanmega", "leafeon",
+"glaceon", "gliscor", "mamoswine", "porygonz", "gallade", "probopass", "dusknoir",
+"froslass", "rotom", "uxie", "mesprit", "azelf", "dialga", "palkia", "heatran",
+"regigigas", "giratina", "cresselia", "phione", "manaphy", "darkrai", "shaymin", "arceus"];
+
+let gen5 = ["victini", "snivy", "servine", "serperior", "tepig", "pignite", "emboar",
+"oshawott", "dewott", "samurott", "patrat", "watchog", "lillipup", "herdier", "stoutland",
+"purrloin", "liepard", "pansage", "simisage", "pansear", "pansage", "panpour", "simipour",
+"munna", "musharna", "pidove", "tranquill", "unfezant", "blitzle", "zebstrika", "roggenrola",
+"boldore", "gigalith", "woobat", "swoobat", "drilbur", "excadrill", "audino", "timburr",
+"gurdurr", "conkeldurr", "tympole", "palpitoad", "seismitoad", "throh", "sawk", "sewaddle",
+"swadloon", "leavanny", "venipede", "whirlipede", "scolipede", "cottonee", "whimsicott",
+"petilil", "lilligant", "basculin", "sandile", "krokorok", "krookodile", "darumaka",
+"darmanitan", "maractus", "dwebble", "crustle", "scraggy", "scrafty", "sigilyph", "yamask",
+"cofagrigus", "tirtouga", "carracosta", "archen", "trubbish", "garbodor", "zorua", "zoroark",
+"mincinno", "cincinno", "gothita", "gothorita", "gothitelle", "solosis", "duosion",
+"reuniclus", "ducklett", "swanna", "vanillite", "vanillish", "vanilluxe", "deerling",
+"sawsbuck", "emolga", "karrablast", "escavalier", "foongus", "amoongus", "frillish",
+"jellicent", "alomomola", "joltik", "galvantula", "ferroseed", "ferrothorn", "klink", "klang",
+"klingklang", "dynamo", "eelektrik", "eelektross", "elgyem", "beeheeyem", "litwick",
+"lampent", "chandelure", "axew", "fraxure", "haxorus", "cubchoo", "beartic", "cryogonal",
+"shelmet", "accelgor", "stunfisk", "mienfoo", "mienshao", "druddigon", "golett", "golurk",
+"pawniard", "bisharp", "bouffalant", "rufflet", "braviary", "vullaby", "mandibuzz", "heatmor",
+"durant", "deino", "zweilous", "hydreigon", "larvesta", "volcarona", "coballion", "terrakion",
+"virizion", "tornadus", "thundurus", "reshiram", "zekrom", "landorus", "kyurem", "keldeo",
+"meloetta", "genesect"];
+
+let gen6 = ["chespin", "quilladin", "chestnaught", "fennekin", "braixen", "delphox", "froakie",
+"frogadier", "greninja", "bunnelby", "diggersby", "fletchling", "fletchinder", "talonflame",
+"scatterbug", "spewpa", "vivillon", "litleo", "pyroar", "flabebe", "floette", "florges",
+"skiddo", "gogoat", "pancham", "pangoro", "furfrou", "espurr", "meowstic", "honedge",
+"doublade", "aegislash", "spritzee", "aromatisse", "swirlix", "slurpuff", "inkay", "malamar",
+"binacle", "barbaracle", "skrelp", "dragalge", "clauncher", "helioptile", "heliolisk",
+"tyrunt", "tyrantrum", "amaura", "aurorus", "sylveon", "hawlucha", "dedenne", "carbink",
+"goomy", "sliggoo", "goodra", "klefki", "phantump", "trevenant", "pumpkaboo", "gourgeist",
+"bergmite", "avalugg", "noibat", "noivern", "xerneas", "yveltal", "zygarde", "diancie",
+"hoopa", "volcanion"];
+
+let gen7 = ["rowlet", "dartrix", "decidueye", "litten", "torracat", "incineroar", "popplio",
+"brionne", "primarina", "pikipek", "trumbeak", "toucannon", "yungoos", "gumshoos", "grubbin",
+"charjabug", "vikavolt", "crabrawler", "crabominable", "oricorio", "cutiefly", "ribombee",
+"rockruff", "lycanroc", "wishiwashi", "mareanie", "toxapex", "mudbray", "mudsdale", "dewpider",
+"araquanid", "fomantis", "lurantis", "morelull", "shiinotic", "salandit", "salazzle",
+"stufful", "bewear", "bounsweet", "steenee", "tsareena", "comfey", "oranguru", "passimian",
+"wimpod", "golisopod", "sandygast", "palossand", "pyukumuku", "type: null", "silvally",
+"komala", "turtonator", "togedemaru", "mimikyu", "bruxish", "drampa", "dhelmise", "jangmoo",
+"hakamoo", "kommoo", "tapu koko", "tapu lele", "tapu bulu", "tapu fini", "cosmog", "cosmoem",
+"solgaleo", "lunala", "nihilego", "buzzwole", "pheromosa", "xurkitree", "celesteela", "kartana",
+"guzzlord", "necrozma", "magearna", "marshadow", "poipole", "naganadel", "stakataka",
+"blacephalon", "zeraora", "meltan", "melmetal"];
+
+let gen8 = ["grookey", "thwackey", "rillaboom", "scorbunny", "raboot", "cinderace", "sobble",
+"drizzile", "inteleon", "skwovet", "greedent", "rookidee", "corvisquire", "corviknight",
+"blipbug", "dottler", "orbeetle", "nickit", "thievul", "gossifleur", "eldegoss", "wooloo",
+"dubwool", "chewtle", "drednaw", "yamper", "boltund", "rolycoly", "carkol", "coalossal",
+"applin", "flapple", "appletun", "silicobra", "sandaconda", "cramorant", "arrokuda",
+"barraskewda", "toxel", "toxtricity", "sizzlipede", "centiskorch", "clobbopus", "grapploct",
+"sinistea", "polteageist", "hatenna", "hattrem", "hatterene", "impidimp", "morgrem",
+"grimmsnarl", "obstagoon", "perrserker", "cursola", "sirfetch'd", "mr. rime", "runerigus",
+"milcery", "alcremie", "falinks", "pincurchin", "snom", "frosmoth", "stonjourner", "eiscue",
+"indeedee", "morpeko", "cufant", "copperajah", "dracozolt", "arctozolt", "dracovish",
+"arctovish", "duraludon", "dreepy", "drakloak", "dragapult", "zacian", "zamazenta", "eternatus",
+"kubfu", "urshifu", "zarude", "regieleki", "regidrago", "glastrier", "spectrier", "calyrex",
+"wyrdeer", "kleavor", "ursaluna", "basculegion", "sneasler", "overqwil", "enamorus"];
+
+let regional = ["alolan rattata", "alolan raticate", "alolan raichu", "alolan sandshrew",
+"alolan sandslash", "alolan vulpix", "alolan ninetales", "alolan diglett", "alolan dugtrio",
+"alolan meowth", "alolan persian", "alolan geodude", "alolan graveler", "alolan golem",
+"alolan grimer", "alolan muk", "alolan exeggutor", "alolan marowak", "galarian meowth",
+"galarian ponyta", "galarian rapidash", "galarian slowpoke", "galarian slowbro",
+"galarian farfetch'd", "galarian weezing", "galarian mr. mime", "galarian articuno",
+"galarian zapdos", "galarian moltres", "galarian slowking", "galarian corsola",
+"galarian zigzagoon", "galarian linoone", "galarian darumaka", "galarian darmanitan",
+"galarian yamask", "galarian stunfisk", "hisuian growlithe", "hisuian arcanine", "hisuian voltorb",
+"hisuian electrode","hisuian typhlosion", "hisuian qwilfish", "hisuian sneasel",
+"hisuian samurott", "hisuian lilligant", "hisuian zorua", "hisuian zoroark",
+"hisuian braviary", "hisuian sligoo", "hisuian goodra", "hisuian avalugg",
+"hisuian decidueye"];
+
+let unown = ["unown a", "unown b", "unown c", "unown d", "unown e", "unown f", "unown g", "unown h",
+"unown i", "unown j", "unown k", "unown l","unown m", "unown n", "unown o", "unown p","unown q", "unown r",
+"unown s", "unown t", "unown w", "unown x", "unown y", "unown z", "unown ?", "unown !"];
+
+let alphabet = ["", "bravo", "charlie", "delta", "echo", "foxtrot", "golf", "hotel", "india", "juliett",
+"kilo", "lima", "mike", "november", "oscar", "papa", "quebec", "romeo", "sierra", "tango", "uniform",
+"victor", "whiskey", "xray", "yankee", "zulu", "interrogation", "exclamation"];
+
+let i = 0;
+function myFunction(name, number){
+
+  if(name.toLowerCase().includes("o-o") || name.toLowerCase().includes("o o") ||
+  name.toLowerCase().includes("n-z")){
+    name = name.replace('-', '');
+    name = name.replace(' ', '');
+  }
+
+  let addMod = 1;
+  if(name.includes(" ")){
+    let numArr = name.split(" ");
+    if(!isNaN(numArr[1])){
+      addMod = parseInt(numArr[1]);
+      name = numArr[0];
+    }
+  }
+  //console.log(addMod);
+
+  if(name.includes(" ")){
+    let nArr = name.split(" ");
+    name = nArr[0].substring(0,1).toUpperCase() + nArr[0].substring(1).toLowerCase() + " " +
+      nArr[1].substring(0,1).toUpperCase() + nArr[1].substring(1).toLowerCase();
+  }
+  else{
+    name = name.substring(0,1).toUpperCase() + name.substring(1).toLowerCase();
+  }
+  let sb = false;
+  sb = document.getElementById("shinyBool").checked;
+
+  if(name.includes("shiny")){
+    sb = true;
+  }
+
+  console.log(name); //name = Regice-shiny
+  if(name.includes("-")){
+    let dArr = name.split("-"); //[Spheal shiny 5]
+    name = dArr[0] + "-" + dArr[1]; //Spheal-shiny
+    addMod = dArr[2]; //addMod = 5
+  }
+  //console.log(name);
+  let dash = name.indexOf("-");
+  if(dash != -1) {
+    name = name.substring(0, dash);
+  }
+
+  let val2 = name;
+  document.getElementById("numb").value = "";
+
+  let num2 = parseInt(number, 10).toString();
+  document.getElementById("starting").value = "";
+
+  if(num2 == "" || val2 == ""){
+    alert("Please enter a valid input");
+  }
+  else if(gen1.includes(val2.toLowerCase()) || gen2.includes(val2.toLowerCase()) || gen3.includes(val2.toLowerCase())
+  || gen4.includes(val2.toLowerCase()) || gen5.includes(val2.toLowerCase()) || gen6.includes(val2.toLowerCase())
+  || gen7.includes(val2.toLowerCase()) || gen8.includes(val2.toLowerCase()) || regional.includes(val2.toLowerCase())
+  || unown.includes(val2.toLowerCase())) {
+    let variable = document.getElementById("List").innerHTML;
+
+    if(val2 == "Hooh") {
+      val2 = "Ho-oh";
+    }
+    else if (val2 == "Jangmoo") {
+      val2 = "Jangmo-o";
+    }
+    else if (val2 == "Hakamoo") {
+      val2 = "Hakamo-o";
+    }
+    else if (val2 == "Kommoo") {
+      val2 = "Kommo-o";
+    }
+    else if (val2 == "Porygonz") {
+      val2 = "Porygon-Z";
+    }
+    document.getElementById("List").innerHTML =
+
+    "<div id = " + i + " class = 'entry'>"
+    +"<div id = " + i + sb + "></div>"
+    +"<div id = " + i + addMod + "></div>"
+    + "<button type='button' class='btn btn-danger' id = 'Remove' onclick = 'remove(this)'>X</button>"
+    + "&nbsp &nbsp"
+    + "<button type='button' class='btn btn-success' id = 'Save' onclick = 'save(this)'>✓</button>"
+    + "<br>"
+    + "<div onclick = editName(this)> <h4>" + val2 + "</h4> </div>"
+    + "<button type='button' class='btn btn-primary btn-circle' id='Sub' onclick = 'subtract(this)'>-</button>" + "&nbsp;"
+    + "<button type='button' class='btn btn-primary btn-circle' id='Add' onclick = 'add(this)'>+</button>"
+    + "<br>"
+    + "<div id = 'num2' onclick = editNum(this)>" + "<h3>" + num2 + "</h3>" + "</div>"
+    + "<div id = " + i + "_img class = 'entry2'> </div>"
+    + "<br>"
+    + "</div>"
+    + variable;
+
+    i++;
+
+    if(sb){
+      n = name+"-shiny"
+    }
+    else{
+      n = name+"-normal";
+    }
+    n = n + "-" + addMod;
+
+    if(val2.includes("o-o") || val2.includes("n-Z")) {
+      val2 =  val2.replace('-', '');
+      val2 =  val2.replace('Z', 'z');
+    }
+    localStorage.setItem(n, number);
+    setImage(val2, -1, sb, true);
+    setCorners(document.getElementById("List"));
+
+  }
+  else{
+    console.log(val2);
+    alert("Please enter a valid Pokemon name");
+  }
+}
+function save(obj){
+  var parent = obj.parentElement;
+  var children = parent.children;
+  let m = children[1].id;
+  let m1 = parseInt(m.substring(1));
+  let nid = parent.children[5].children[0].innerHTML;
+  let value = children[9].children[0].innerHTML;
+  let sb = "";
+  sb = "-normal-complete";
+  let s = "";
+  if(parent.children[0].id.includes(true)){
+    sb = "-shiny-complete";
+    s = "Shiny";
+  }
+  document.getElementById("Saved").innerHTML += "<div><h4>" + "&nbsp" + s + " " + nid + " - " + value + "<button type='button' class='btn btn-primary btn-circle' onclick = 'sendBack(this)'> > </button> <div id = " + m1 + "></div> </h4></div>";
+
+  remove(obj);
+  let n = nid + sb + "-" + m1;
+  if(n.includes("o-o") || n.includes("n-Z")) {
+    n = n.replace('-', '');
+    n = n.replace('Z', 'z');
+  }
+  localStorage.setItem(n, value);
+
+}
+
+function addSaved(s, name, number, step){
+  if(name.includes("Hooh")){
+    name = "Ho-oh";
+  }
+  else if (name.includes("Jangmoo")) {
+    name = "Jangmo-o";
+  }
+  else if (name.includes("Hakamoo")) {
+    name = "Hakamo-o";
+  }
+  else if (name.includes("Kommoo")) {
+    name = "Kommo-o";
+  }
+  else if (name.includes("Porygonz")) {
+    name = "Porygon-Z";
+  }
+  document.getElementById("Saved").innerHTML += "<div><h4>" + "&nbsp" + s + " " + name + " - " + number + "<button type='button' class='btn btn-primary btn-circle' onclick = 'sendBack(this)'> > </button> <div id = " + step + "></div> </h4></div>";
+
+}
+
+function sendBack(obj){
+  let s = obj.parentElement.innerHTML.split(" ");
+  let c = obj.parentElement.children[1].id;
+  let name = "";
+  let number = "";
+  if(s[1] == "Hisuian" || s[1] == "Galarian" || s[1] == "Alolan" || s[1] == "Tapu" || s[1] == "Mr." || s[1] == "Unown"){
+    name = s[1] + " " + s[2];
+    number = s[4];
+    number = number.substring(0, number.length-7);
+  }else{
+    name = s[1];
+    number = s[3];
+    number = number.substring(0, number.length-7);
+  }
+  if(s[0].includes("Shiny")){
+    name = name + "-shiny";
+  }
+  else{
+    name = name + "-normal";
+  }
+
+  myFunction(name + "-" + c, number.toString())
+  let parent = obj.parentElement;
+  parent.remove();
+  name = name + "-complete" + "-" + c;
+  if(name.includes("o-o") || name.includes("n-Z")) {
+    name = name.replace('-', '');
+    name = name.replace('Z', 'z');
+  }
+  localStorage.removeItem(name);
+}
+
+function setCorners(obj){
+
+  if(obj.children.length == 1){
+    obj.children[0].style.borderRadius = "15px 15px 15px 15px";
+  }
+
+  else{
+    obj.children[0].style.borderRadius = "15px 15px 0px 0px";
+    obj.children[1].style.borderRadius = "0px";
+    obj.children[obj.children.length-1].style.borderRadius = "0px 0px 15px 15px";
+  }
+}
+function editNum(obj){
+  var parent = obj.parentElement;
+  var children = parent.children;
+  let newNum = prompt("Please enter the new number");
+  if(!isNaN(parseInt(newNum))){
+    children[9].children[0].innerHTML = newNum;
+
+    let s = "-normal";
+    if(parent.children[0].id.includes(true)){
+      s = "-shiny"
+    }
+    let nid = parent.children[5].children[0].innerHTML + s;
+    localStorage.setItem(nid, newNum);
+  }
+
+}
+function editName(obj){
+  var parent = obj.parentElement;
+  var children = parent.children;
+  let m = children[1].id;
+  let m1 = parseInt(m.substring(1));
+  let numInner = children[9].children[0].innerHTML;
+  let oldName = children[5].children[0].innerHTML;
+  let newName = prompt("Please enter the new Pokemon name");
+  try{
+    if(gen1.includes(newName.toLowerCase()) || gen2.includes(newName.toLowerCase()) || gen3.includes(newName.toLowerCase())
+    || gen4.includes(newName.toLowerCase()) || gen5.includes(newName.toLowerCase()) || gen6.includes(newName.toLowerCase())
+    || gen7.includes(newName.toLowerCase()) || gen8.includes(newName.toLowerCase()) || regional.includes(newName.toLowerCase())){
+      if(newName != null && newName != ""){
+        children[5].innerHTML = "<h4>" + newName + "</h4>";
+        let s = "-normal";
+        if(parent.children[0].id.includes(true)){
+          s = "-shiny"
+        }
+        //let nid = parent.children[5].children[0].innerHTML + s + "-" + m1;
+        let nid = newName + s + "-" + m1;
+        let oid = oldName + s + "-" + m1;
+        localStorage.setItem(nid, numInner);
+        localStorage.removeItem(oid);
+        if(s == "-normal"){
+          setImage(newName, parent.id, false, false);
+        }
+        else{
+          setImage(newName, parent.id, true, false);
+        }
+      }
+    }
+  }
+  catch{
+    return;
+  }
+
+}
+function setImage(name, div, sb, top){
+  let id = name.toLowerCase();
+
+  let galar = false;
+  if(gen8.includes(id.toLowerCase())){
+    galar = true;
+  }
+
+  if(id == "hooh"){
+    id = "ho-oh"
+  }
+  else if (id == "jangmoo") {
+    id = "jangmo-o";
+  }
+  else if (id == "hakamoo") {
+    id = "hakamo-o";
+  }
+  else if (id == "kommoo") {
+    id = "kommo-o";
+  }
+  else if (id == "porygonz") {
+    id = "porygon-z";
+  }
+  if(id == "farfetch'd") id = "farfetchd";
+  if(id == "sirfetch'd") id = "sirfetchd";
+
+  if(id.startsWith("alolan")){
+    id = id.substring(7) + "-alola";
+  }
+  if(id.startsWith("galarian")){
+    id = id.substring(9) + "-galar";
+  }
+  if(id.startsWith("hisuian")){
+    id = id.substring(8) + "-hisui";
+  }
+
+  let img = "";
+  if(id == "calyrex" || id == "regieleki" || id == "regidrago" || id == "glastrier" || id == "spectrier"){
+    img = id;
+    if(sb == false) img = img + ".gif";
+    else img = img + "-s.gif";
+  }
+
+  else if (id.includes("hisui") || id == "wyrdeer" || id == "kleavor" || id == "ursaluna"
+|| id == "basculegion" || id == "sneasler" || id == "overqwil" || id == "enamorus") {
+    if(sb == false) img = "front/" + id + ".gif";
+    else img = "front-shiny/" + id + ".gif";
+  }
+  else{
+    id = id.replace(' ', '');
+    if(galar){
+      if(sb == false){
+      img = "https://projectpokemon.org/images/sprites-models/swsh-normal-sprites/" + id + ".gif"
+    }
+    else{
+      img = "https://projectpokemon.org/images/sprites-models/swsh-shiny-sprites/" + id + ".gif"
+      }
+    }
+    else{
+        if(sb == false){
+        img = "https://projectpokemon.org/images/normal-sprite/" + id + ".gif"
+      }
+      else{
+        if(id == "mr.mime") id = "mr._mime"
+        if(id.includes("unown")){
+          var n = id.charCodeAt(5) - 97; //gives us a number between 0 and 25
+          id = "unown"
+          if(n == -34) n = 26; //?
+          if(n == -64) n = 27; //!
+          if(n == 0) {
+            img = "https://projectpokemon.org/images/shiny-sprite/" + id + ".gif";
+          }
+          else{
+            img = "https://projectpokemon.org/images/shiny-sprite/" + id + "-" + alphabet[n] + ".gif";
+          }
+
+        }
+        else{
+          img = "https://projectpokemon.org/images/shiny-sprite/" + id + ".gif";
+          if(id == "jirachi") img = "https://archives.bulbagarden.net/media/upload/e/e7/Spr_3e_385_s.png";
+        }
+      }
+    }
+  }
+
+  let divId = 0;
+  if(div == -1){
+    divId = i-1+"_img";
+  }
+  else{
+    divId = div+"_img";
+  }
+  if(top){
+    if(dc == false){
+      document.getElementById((i-1).toString()).style.backgroundColor = "#486581";
+      dc = true;
+
+    }
+    else{
+      document.getElementById((i-1).toString()).style.backgroundColor = "#627D98";
+      dc = false;
+
+    }
+  }
+
+  document.getElementById((i-1).toString()).style.width = "430px";
+  document.getElementById((i-1).toString()).style.height = "168px";
+  document.getElementById((i-1).toString()).style.zIndex = "0";
+  document.getElementById((i-1).toString()).style.padding = "8px";
+  //<img src="img_girl.jpg" alt="Girl in a jacket" width="500" height="600">
+  document.getElementById(divId).innerHTML = "<img src = " + img + " onerror='imgFix()'>";
+
+}
+function imgFix(){
+  let img = "https://projectpokemon.org/images/normal-sprite/unown-interrogation.gif";
+  let divId = i-1+"_img";
+  document.getElementById(divId).innerHTML = "<img src = " + img + ">";
+}
+
+function subtract(obj){
+  var parent = obj.parentElement;
+  var children = parent.children;
+  let m = children[1].id;
+  let m1 = parseInt(m.substring(1));
+  let numInner = children[9].children[0].innerHTML;
+  for(let i = 0; i < m1; i++){
+    numInner--;
+  }
+  children[9].children[0].innerHTML = numInner;
+  let s = "-normal";
+  if(parent.children[0].id.includes(true)){
+    s = "-shiny"
+  }
+  let nid = parent.children[5].children[0].innerHTML + s + "-" + m1;
+  if(nid.includes("o-o") || nid.includes("n-Z")) {
+    nid = nid.replace('-', '');
+    nid = nid.replace('Z', 'z');
+  }
+
+  localStorage.setItem(nid, numInner);
+
+}
+function add(obj){
+  var parent = obj.parentElement;
+  var children = parent.children;
+  let m = children[1].id;
+  let m1 = parseInt(m.substring(1));
+  let numInner = children[9].children[0].innerHTML;
+  for(let i = 0; i < m1; i++){
+    numInner++;
+  }
+  children[9].children[0].innerHTML = numInner;
+
+  let s = "-normal";
+  if(parent.children[0].id.includes(true)){
+    s = "-shiny"
+  }
+
+  let nid = parent.children[5].children[0].innerHTML + s + "-" + m1;
+  if(nid.includes("o-o") || nid.includes("n-Z")) {
+    nid = nid.replace('-', '');
+    nid = nid.replace('Z', 'z');
+  }
+  localStorage.setItem(nid, numInner);
+
+}
+function remove(obj){
+  var parent = obj.parentElement;
+  var list = parent.parentElement;
+  var children = parent.children;
+
+  let m = children[1].id;
+  let m1 = parseInt(m.substring(1));
+
+  if(parent == list.children[0]){
+    dc = !dc;
+  }
+  else if(parent != list.children[list.children.length-1]){
+    let i = 0;
+    while(list.children[i] != parent){
+      i++;
+    }
+    if((i%2 == 1 && dc == false) || (i%2 == 0 && dc == true)){
+      let j = 1;
+      while(i+j < list.children.length){
+        list.children[i+j].style.backgroundColor = "#486581";
+        if(i+j+1 < list.children.length){
+          list.children[i+j+1].style.backgroundColor = "#627D98";
+        }
+        j = j+2;
+      }
+
+    }
+    if((i%2 == 0 && dc == false) || (i%2 == 1 && dc == true)){
+      let j = 1;
+      while(i+j < list.children.length-1){
+        list.children[i+j].style.backgroundColor = "#627D98";
+        if(i+j+1 < list.children.length){
+          list.children[i+j+1].style.backgroundColor = "#486581";
+        }
+        j = j+2;
+      }
+    }
+  }
+
+  let s = "-normal";
+  if(parent.children[0].id.includes(true)){
+    s = "-shiny"
+  }
+
+  let nid = parent.children[5].children[0].innerHTML + s + "-" + m1;
+  if(nid.includes("o-o") || nid.includes("n-Z")) {
+    nid = nid.replace('-', '');
+    nid = nid.replace('Z', 'z');
+  }
+  localStorage.removeItem(nid);
+  parent.remove();
+  setCorners(document.getElementById("List"));
+
+}
+function changeTheme(){
+
+  if(dm == false){
+    document.getElementById("darkMode").className = document.getElementById("darkMode").className.replace( /(?:^|\s)btn-dark(?!\S)/g , '' );
+    document.getElementById("darkMode").className += " btn-light";
+    document.getElementById("darkMode").innerHTML = "Light Mode";
+    document.body.style.backgroundColor = "#323232";
+    document.body.style.color = "white";
+    document.getElementById("List").style.color = "white";
+    document.getElementById("Saved").style.color = "white";
+    document.getElementById("Saved").style.backgroundColor = "#323232";
+    /*let lst1 = document.getElementsByClassName('btn-danger');
+    for(let i = 0; i < lst1.length; i++){
+      lst1[i].style.backgroundColor = "blue";
+    }
+    let lst2 = document.getElementsByClassName('btn-circle');
+    for(let i = 0; i < lst2.length; i++){
+      lst2[i].style.backgroundColor = "green";
+    }*/
+    dm = true;
+  }
+  else{
+    document.getElementById("darkMode").className = document.getElementById("darkMode").className.replace( /(?:^|\s)btn-light(?!\S)/g , '' );
+    document.getElementById("darkMode").className += " btn-dark";
+    document.getElementById("darkMode").innerHTML = "Dark Mode";
+    document.body.style.backgroundColor = "white"
+    document.body.style.color = "black";
+    document.getElementById("List").style.color = "black";
+    document.getElementById("Saved").style.color = "black";
+    document.getElementById("Saved").style.backgroundColor = "#AAAAAA";
+    /*let lst1 = document.getElementsByClassName('btn-danger');
+    for(let i = 0; i < lst1.length; i++){
+      lst1[i].style.backgroundColor = "red";
+    }
+    let lst2 = document.getElementsByClassName('btn-circle');
+    for(let i = 0; i < lst2.length; i++){
+      lst2[i].style.backgroundColor = "blue";
+    }*/
+    dm = false;
+  }
+}
+function quickFix(){
+  for (var i = localStorage.length-1; i >= 0; i--) {
+    var key = localStorage.key(i);
+    var value = localStorage.getItem(key);
+
+    let s = key.split("-");
+    if(s.length < 3){
+      localStorage.removeItem(key);
+    }
+    else{
+      if(s[2] == "undefined") {
+        localStorage.removeItem(key);
+      }
+      if(s[2] == "NaN") {
+        localStorage.removeItem(key);
+      }
+    }
+
+  }
+  location.reload();
+}
+function loadPokes() {
+  for (var i = localStorage.length-1; i >= 0; i--) {
+    var key = localStorage.key(i);
+    var value = localStorage.getItem(key);
+
+    if(key.includes("complete")){
+      let s = key.split("-");
+      let sh = "";
+      let n = s[0];
+      if(s[1] == "shiny"){
+        sh = "Shiny";
+        n = s[0];
+      }
+      let step = s[3];
+      addSaved(sh, n, value, step);
+    }
+    else{
+      myFunction(key, value);
+    }
+  }
+}
+let com1 = "";
+let com2 = "";
+let com3 = "";
+
+window.addEventListener('keydown', function (e) {
+  com1 = com1 + `${e.key}`;
+  com2 = com2 + `${e.key}`;
+  com3 = com3 + `${e.key}`;
+
+  if(`${e.key}` == 'c'){
+    document.body.style.backgroundImage = '';
+    com1 = "";
+    com2 = "";
+    com3 = "";
+  }
+  if(com1.includes("hoenn")){
+    document.body.style.backgroundImage = "url(hoennbg_med.png)"
+    com1 = "";
+    com2 = "";
+    com3 = "";
+  }
+  if (com2.includes("kalos")) {
+    document.body.style.backgroundImage = "url(kalosbg_med.png)"
+    com1 = "";
+    com2 = "";
+    com3 = "";
+  }
+  if (com3.includes("kanto")) {
+    document.body.style.backgroundImage = "url(kantobg_med.jpeg)"
+    com1 = "";
+    com2 = "";
+    com3 = "";
+  }
+
+}, false);
+
+loadPokes();
+changeTheme();
+
+
+</script>
+
+</html>
